@@ -10,35 +10,13 @@ import {
   TextField,
   Typography,
   Button,
-  Stepper,
-  Step,
-  StepLabel,
   RadioGroup,
   FormLabel,
   FormControlLabel,
   Radio,
 } from "@mui/material";
+import TabView from "../TabView";
 
-function getSteps() {
-  return [
-    "Overview",
-    "Leadership Team",
-    "Academics",
-    "Infrastructure",
-    "Distribution",
-    "Activities & Events",
-    "Facilities",
-    "Test Preparations",
-    "Teachers & Staff",
-    "Admission & Fees",
-    "Policy",
-    "Gallery",
-    "Contact",
-    "Reviews & Ratings",
-    "Downloads",
-    "Specialities",
-  ];
-}
 const OverViewForm = () => {
   const { control } = useFormContext();
   return (
@@ -54,7 +32,6 @@ const OverViewForm = () => {
             variant="outlined"
             placeholder="Enter Your School Name"
             fullWidth
-            required
             margin="normal"
             {...field}
           />
@@ -69,7 +46,6 @@ const OverViewForm = () => {
             label="Address"
             variant="outlined"
             placeholder="Enter Your Address"
-            required
             fullWidth
             margin="normal"
             {...field}
@@ -85,7 +61,6 @@ const OverViewForm = () => {
               id="State"
               label="State"
               variant="outlined"
-              required
               placeholder="Enter Your State"
               margin="normal"
               {...field}
@@ -100,7 +75,6 @@ const OverViewForm = () => {
               id="District"
               label="District"
               variant="outlined"
-              required
               placeholder="Enter Your District"
               margin="normal"
               {...field}
@@ -115,7 +89,6 @@ const OverViewForm = () => {
               id="City"
               label="City"
               variant="outlined"
-              required
               placeholder="Enter Your City"
               margin="normal"
               {...field}
@@ -131,7 +104,6 @@ const OverViewForm = () => {
             id="Pincode"
             label="Pincode"
             variant="outlined"
-            required
             placeholder="Enter Your Pincode"
             fullWidth
             margin="normal"
@@ -148,7 +120,6 @@ const OverViewForm = () => {
             label="Contact Number"
             variant="outlined"
             placeholder="Enter Your Contact Number"
-            required
             fullWidth
             margin="normal"
             {...field}
@@ -178,7 +149,6 @@ const OverViewForm = () => {
             id="Email address"
             label="Email address"
             variant="outlined"
-            required
             placeholder="Enter Your Email address"
             fullWidth
             margin="normal"
@@ -521,8 +491,8 @@ const PersonalForm = () => {
   );
 };
 
-function getStepContent(step) {
-  switch (step) {
+function getStepContent(value) {
+  switch (value) {
     case 0:
       return <OverViewForm />;
     case 1:
@@ -533,12 +503,13 @@ function getStepContent(step) {
 }
 
 const LinaerStepper = () => {
-  const methods = useForm({
-    defaultValues: {},
-  });
-  const [activeStep, setActiveStep] = useState(0);
+  const methods = useForm({});
   const [skippedSteps, setSkippedSteps] = useState([]);
-  const steps = getSteps();
+  const [value, setValue] = useState(0);
+
+  const handleChange = (event, newValue) => {
+    setValue(newValue);
+  };
 
   const isStepOptional = (step) => {
     return step === 1 || step === 2;
@@ -548,20 +519,20 @@ const LinaerStepper = () => {
     return skippedSteps.includes(step);
   };
 
-  const handleNext = (data) => {
+  const handleNext = (value1, data) => {
     console.log(data);
-    if (activeStep == steps.length - 1) {
-      setActiveStep(activeStep + 1);
+    if (value <= 16 - 1) {
+      setValue(value + 1);
     } else {
-      setActiveStep(activeStep + 1);
-      setSkippedSteps(
-        skippedSteps.filter((skipItem) => skipItem !== activeStep)
-      );
+      // setValue(value + 1);
+      // setSkippedSteps(
+      //   skippedSteps.filter((skipItem) => skipItem !== activeStep)
+      // );
     }
   };
 
   const handleBack = () => {
-    setActiveStep(activeStep - 1);
+    setValue(value - 1);
   };
 
   const handleSkip = () => {
@@ -573,21 +544,22 @@ const LinaerStepper = () => {
 
   return (
     <div>
-      {activeStep === steps.length ? (
-        <Typography variant="h3" align="center">
+      <TabView value={value} handleChange={handleChange} />
+      {value === 16 ? (
+        <Typography variant="h2" align="center">
           Thank You
         </Typography>
       ) : (
         <>
           <FormProvider {...methods}>
             <form onSubmit={methods.handleSubmit(handleNext)}>
-              {getStepContent(activeStep)}
+              {getStepContent(value)}
 
               <div className="flex">
-                <Button disabled={activeStep === 0} onClick={handleBack}>
+                <Button disabled={value === 0} onClick={() => handleBack()}>
                   back
                 </Button>
-                {isStepOptional(activeStep) && (
+                {isStepOptional(value) && (
                   <Button
                     variant="contained"
                     color="primary"
@@ -597,7 +569,7 @@ const LinaerStepper = () => {
                   </Button>
                 )}
                 <Button variant="contained" color="primary" type="submit">
-                  {activeStep === steps.length - 1 ? "Finish" : "Next"}
+                  {value === 16 - 1 ? "Finish" : "Next"}
                 </Button>
               </div>
             </form>
